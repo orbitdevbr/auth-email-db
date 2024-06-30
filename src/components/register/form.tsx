@@ -19,37 +19,49 @@ import { useRouter } from "next/navigation";
 import { FormEvent, useCallback, useRef, useState } from "react";
 
 export function RegisterForm() {
+  // Router serve para fazer redirect de páginas
   const router = useRouter();
 
+  // Referência para os inputs
   const emailInputRef = useRef<HTMLInputElement>(null);
   const passwordInputRef = useRef<HTMLInputElement>(null);
   const password2InputRef = useRef<HTMLInputElement>(null);
 
+  // Estados do formulário
   const [formError, setFormError] = useState("");
   const [formLoading, setFormLoading] = useState(false);
   const [formSuccess, setFormSuccess] = useState(false);
 
+  // Função que realiza o cadastro ao enviar o formulário
   const handleRegisterSubmit = useCallback(
     async (event: FormEvent<HTMLFormElement>) => {
+      // Previne o envio do formulário pelo navegador
       event.preventDefault();
+      // Reseta os estados do formulário
       setFormError("");
       setFormLoading(true);
 
+      // Regex para verificar e-mail
       const emailReg = new RegExp(
         "[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?"
       );
 
+      // Verifica se os inputs existem na página
       if (
         emailInputRef.current &&
         password2InputRef.current &&
         passwordInputRef.current
       ) {
+        // Pega os valores preenchidos nos inputs
         const email = emailInputRef.current.value;
         const pass1 = passwordInputRef.current.value;
         const pass2 = password2InputRef.current.value;
 
+        // Começa não precisando dar erro nenhum
         let shouldReturnError = false;
 
+        // Caso encontre algum erro de validação,
+        // altera o estado de erro
         if (!emailReg.test(email)) {
           setFormError("Digite um e-mail válido.");
           shouldReturnError = true;
@@ -72,21 +84,29 @@ export function RegisterForm() {
         }
 
         try {
+          // Tenta fazer o cadastro
+          // Se o AXIOS retornar um erro, ele vai dar um throw new AxiosError()
+          // que vai ser verificado no catch()
           const response = await axios.post<RegisterResponse>("/api/register", {
             email,
             password: pass1,
             password2: pass2,
           });
 
+          // Se chegou aqui, o cadastro deu certo
           router.push("/");
 
           setFormLoading(false);
           setFormSuccess(true);
         } catch (error) {
+          // Se chegou aqui, ocorreu um erro nao tentar cadastrar o usuário
+          // Verificamos se é uma instância do AxiosError só para tipar o erro
           if (error instanceof AxiosError) {
+            // O erro vem dentro de response.data, como JSON, de acordo com a tipagem
             const { error: errorMessage } = error.response
               ?.data as RegisterResponse;
 
+            // Se o usuário já existe, sugere mandar para o login
             if (errorMessage === "user already exists") {
               setFormError(
                 "Esse e-mail já está registrado. Tente ir para o login."

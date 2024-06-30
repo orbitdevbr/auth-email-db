@@ -15,42 +15,58 @@ import { Label } from "@/components/ui/label";
 import axios, { AxiosError } from "axios";
 import { LoaderPinwheel } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { FormEvent, useCallback, useRef, useState } from "react";
 
 export function LoginForm() {
+  // Router serve para fazer redirect de páginas
+  const router = useRouter();
+
+  // Referência para os inputs
   const emailInputRef = useRef<HTMLInputElement>(null);
   const passwordInputRef = useRef<HTMLInputElement>(null);
 
+  // Estados do formulário
   const [formError, setFormError] = useState("");
   const [formLoading, setFormLoading] = useState(false);
   const [formSuccess, setFormSuccess] = useState(false);
 
+  // Função que realiza o login ao enviar o formulário
   const handleLoginSubmit = useCallback(
     async (event: FormEvent<HTMLFormElement>) => {
+      // Previne o envio do formulário pelo navegador
       event.preventDefault();
+      // Reseta os estados do formulário
       setFormError("");
       setFormLoading(true);
 
+      // Verifica se os inputs existem na página
       if (emailInputRef.current && passwordInputRef.current) {
+        // Pega os valores preenchidos nos inputs
         const email = emailInputRef.current.value;
         const pass1 = passwordInputRef.current.value;
 
         try {
+          // tenta realizar o login
           const response = await axios.post<LoginResponse>("/api/login", {
             email,
             password: pass1,
           });
 
+          // se chegar aqui, o login deu certo
+          router.push("/");
+
           setFormLoading(false);
           setFormSuccess(true);
         } catch (error) {
+          // Altera o estado de forma genérica, sem informar o erro
           setFormError("login invalid");
           setFormLoading(false);
           setFormSuccess(false);
         }
       }
     },
-    []
+    [router]
   );
 
   return (
@@ -81,6 +97,7 @@ export function LoginForm() {
           </div>
         </CardContent>
         <CardFooter className="grid">
+          {/* Erro genérico por segurança */}
           {formError && (
             <div className="text-amber-600 mb-4">
               <p className="text-sm font-semibold">Erro no login</p>

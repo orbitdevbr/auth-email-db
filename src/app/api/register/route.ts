@@ -18,6 +18,9 @@ export interface RegisterResponse {
   user?: User;
 }
 
+/**
+ * Realiza o cadastro
+ */
 export async function POST(request: Request) {
   const body = (await request.json()) as RegisterProps;
 

@@ -4,7 +4,12 @@ interface GenerateSessionDTO {
   email: string;
   passwordHash: string;
 }
-
+/**
+ * @name GenerateSession
+ * @param {string} email E-mail do usuário
+ * @param {string} passwordHash Senha criptografada
+ * @return {string} O token da sessão
+ */
 export function GenerateSession({
   email,
   passwordHash,

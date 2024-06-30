@@ -15,6 +15,12 @@ export interface LoginResponse {
 }
 
 export const revalidate = 0;
+
+/**
+ * Verifica o estado da autenticação, pegando o token de login nos cookies
+ * Verifica se a sessão existe, se não expirou e se ainda está válida
+ * Retorna 401 se não permitir a autenticação e 200 se permitir
+ */
 export async function GET(request: NextRequest) {
   const authCookie = cookies().get("auth-session");
 
@@ -34,6 +40,9 @@ export async function GET(request: NextRequest) {
   return NextResponse.json({}, { status: 200 });
 }
 
+/**
+ * Realiza o login
+ */
 export async function POST(request: Request) {
   const body = (await request.json()) as LoginProps;
 
