@@ -171,8 +171,9 @@ export function RegisterForm() {
           )}
           {formSuccess && (
             <div className="text-rose-600 mb-4">
-              <p className="text-sm font-semibold">Erro no formulário</p>
-              <p>{formError}</p>
+              <p className="text-sm font-semibold">
+                Cadastro realizado, redirecionando para o app
+              </p>
             </div>
           )}
           <Button
